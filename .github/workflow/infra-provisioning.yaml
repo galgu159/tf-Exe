@@ -1,0 +1,21 @@
+name: Terraform infra provisioning
+on: [push]
+jobs:
+  InfrastructureProvisioning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.8.4"
+      - name: Apply configurations
+        env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          terraform init
+#          terraform workspace select default
+          terraform plan -var-file dev.trvars
+          terraform apply -auto-approve -var-file dev.trvars
+        
